@@ -1,7 +1,12 @@
 package com.example.aplicationbank.presentation.detail
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.aplicationbank.domain.model.Currency
+import com.example.aplicationbank.domain.model.Product
 import com.example.aplicationbank.domain.usecase.GetProductsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,12 +48,19 @@ class ProductDetailViewModel(
         }
     }
 
-    fun shareAccountInfo() {
-        viewModelScope.launch {
-            state.value.product?.let { product ->
-                // Implementar lógica de compartir
-            }
-        }
+    fun buildShareMessage(product: Product): String {
+        return """
+        Cuenta: ${product.name}
+        Número: ${product.accountNumber}
+        CCI: ${product.cci}
+        Moneda: ${product.currency}
+    """.trimIndent()
     }
+
+
+    fun clearShareMessage() {
+        _state.value = _state.value.copy(shareMessage = null)
+    }
+
 }
 

@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                                         "Servicios" -> {
 
                                         }
-                                        "Soporte" -> {
+                                        "Menu" -> {
 
                                         }
                                     }

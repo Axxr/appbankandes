@@ -44,7 +44,7 @@ import com.example.aplicationbank.R
 fun HomeScreen(
     onProductSelected: (String) -> Unit,
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigationItemClick: (String) -> Unit // Para manejar navegación desde el NavBar
+        onNavigationItemClick: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isLoading)

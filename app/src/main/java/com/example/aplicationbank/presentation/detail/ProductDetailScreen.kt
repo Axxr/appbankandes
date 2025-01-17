@@ -1,5 +1,7 @@
 package com.example.aplicationbank.presentation.detail
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
@@ -23,9 +25,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.aplicationbank.R
 
@@ -37,6 +40,7 @@ fun ProductDetailScreen(
     viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -52,7 +56,14 @@ fun ProductDetailScreen(
                     .fillMaxWidth(),
                 fontWeight = FontWeight.Bold
             )
-            ProductHeader(product)
+            ProductHeader(
+                product = product,
+                onShareClick = {
+                    val shareMessage = viewModel.buildShareMessage(product)
+                    val clearMessage = viewModel.clearShareMessage()
+                    shareProductInfo(context, shareMessage, clearMessage)
+                }
+            )
             Spacer(modifier = Modifier.height(24.dp))
             TransactionsList(state.transactions)
         }
@@ -74,7 +85,9 @@ fun ProductDetailScreen(
 }
 
 @Composable
-fun ProductHeader(product: Product) {
+fun ProductHeader(
+    product: Product, onShareClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth()
             .border(
@@ -95,41 +108,57 @@ fun ProductHeader(product: Product) {
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Icon(
-                    painter = painterResource(id = when(product.currency){
-                        Currency.PEN -> R.drawable.savings_sol
-                        Currency.USD -> R.drawable.savings_dollar
-                    }),
-                    contentDescription = product.name,
-                    modifier = Modifier
-                        .size(80.dp)
-                        //.background(color = Color(0xFFE6FAFF))
-                        .padding(all = 1.dp)
-                        .clip(RoundedCornerShape(100.dp)),
-                    //.border(1.dp, Color(0xFFD8DADC), RoundedCornerShape(100.dp)),
-                    tint = Color.Unspecified
-                )
-                Spacer(modifier = Modifier.widthIn(16.dp))
-                Column (
-                    horizontalAlignment = Alignment.Start
-                ){
-                    Text(
-                        text = product.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xCC003462),
-                        fontWeight = FontWeight.Bold
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = when(product.currency){
+                            Currency.PEN -> R.drawable.savings_sol
+                            Currency.USD -> R.drawable.savings_dollar
+                        }),
+                        contentDescription = product.name,
+                        modifier = Modifier
+                            .size(80.dp)
+                            //.background(color = Color(0xFFE6FAFF))
+                            .padding(all = 1.dp)
+                            .clip(RoundedCornerShape(100.dp)),
+                        //.border(1.dp, Color(0xFFD8DADC), RoundedCornerShape(100.dp)),
+                        tint = Color.Unspecified
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        text = "Cuenta: ${product.accountNumber}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        text = "CCI: ${product.cci}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Spacer(modifier = Modifier.widthIn(16.dp))
+                    Column (
+                        horizontalAlignment = Alignment.Start
+                    ){
+                        Text(
+                            text = product.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color(0xCC003462),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            text = "Cuenta: ${product.accountNumber}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            text = "CCI: ${product.cci}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                    }
+                    IconButton(
+                        onClick = { onShareClick() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Compartir",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -224,4 +253,12 @@ fun TransactionItem(transaction: Transaction) {
             )
         }
     }
+}
+
+private fun shareProductInfo(context: Context, shareMessage: String, claearmesage: Unit) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, shareMessage)
+    }
+    context.startActivity(Intent.createChooser(shareIntent, "Compartir información de la cuenta"))
 }

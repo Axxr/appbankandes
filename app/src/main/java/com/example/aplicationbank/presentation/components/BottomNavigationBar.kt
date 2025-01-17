@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MobileFriendly
+import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
@@ -18,22 +19,22 @@ import com.example.aplicationbank.R
 
 @Composable
 fun BottomNavigationBar(onNavigationItemClick: (String) -> Unit) {
-    var selectedItem by remember { mutableStateOf("Inicio") } // Estado para el ítem seleccionado
+    var selectedItem by remember { mutableStateOf("Inicio") }
 
     NavigationBar(
         containerColor = Color.White,
     ) {
         NavigationBarItem(
-            selected = selectedItem == "Inicio", // Comparar si el ítem es el seleccionado
+            selected = selectedItem == "Inicio",
             onClick = {
-                selectedItem = "Inicio"  // Cambiar el ítem seleccionado
+                selectedItem = "Inicio"
                 onNavigationItemClick("Inicio")
             },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Inicio",
-                    tint = if (selectedItem == "Inicio") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    tint = if (selectedItem == "Inicio") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             },
             label = {
@@ -44,62 +45,62 @@ fun BottomNavigationBar(onNavigationItemClick: (String) -> Unit) {
             }
         )
         NavigationBarItem(
-            selected = selectedItem == "Operaciones", // Comparar si el ítem es el seleccionado
+            selected = selectedItem == "Operaciones",
             onClick = {
-                selectedItem = "Operaciones"  // Cambiar el ítem seleccionado
+                selectedItem = "Operaciones"
                 onNavigationItemClick("Operaciones")
             },
             icon = {
                 Icon(
                     imageVector = Icons.Default.SwapHoriz,
                     contentDescription = "Operaciones",
-                    tint = if (selectedItem == "Operaciones") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    tint = if (selectedItem == "Operaciones") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             },
             label = {
                 Text(
                     text = "Operaciones",
-                    color = if (selectedItem == "Operaciones") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    color = if (selectedItem == "Operaciones") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             }
         )
         NavigationBarItem(
-            selected = selectedItem == "Servicios", // Comparar si el ítem es el seleccionado
+            selected = selectedItem == "Servicios",
             onClick = {
-                selectedItem = "Servicios"  // Cambiar el ítem seleccionado
+                selectedItem = "Servicios"
                 onNavigationItemClick("Servicios")
             },
             icon = {
                 Icon(
                     imageVector = Icons.Default.MobileFriendly,
                     contentDescription = "Servicios",
-                    tint = if (selectedItem == "Servicios") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    tint = if (selectedItem == "Servicios") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             },
             label = {
                 Text(
                     text = "Servicios",
-                    color = if (selectedItem == "Servicios") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    color = if (selectedItem == "Servicios") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             }
         )
         NavigationBarItem(
-            selected = selectedItem == "Soporte", // Comparar si el ítem es el seleccionado
+            selected = selectedItem == "Menu",
             onClick = {
-                selectedItem = "Soporte"  // Cambiar el ítem seleccionado
-                onNavigationItemClick("Soporte")
+                selectedItem = "Menu"
+                onNavigationItemClick("Menu")
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.HeadsetMic,
-                    contentDescription = "Soporte",
-                    tint = if (selectedItem == "Soporte") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    imageVector = Icons.Default.Notes,
+                    contentDescription = "Menu",
+                    tint = if (selectedItem == "Menu") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             },
             label = {
                 Text(
-                    text = "Soporte",
-                    color = if (selectedItem == "Soporte") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f) // Colores según selección
+                    text = "Menu",
+                    color = if (selectedItem == "Menu") Color(0xFF00C8FF) else Color.Gray.copy(alpha = 0.6f)
                 )
             }
         )

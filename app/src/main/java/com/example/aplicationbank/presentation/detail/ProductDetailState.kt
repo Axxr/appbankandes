@@ -7,5 +7,6 @@ data class ProductDetailState(
     val isLoading: Boolean = false,
     val product: Product? = null,
     val transactions: List<Transaction> = emptyList(),
-    val error: String? = null
+    val error: String? = null,
+    val shareMessage: String? = null
 )
