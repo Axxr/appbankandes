@@ -2,6 +2,7 @@ package com.example.aplicationbank.presentation.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Modifier
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.aplicationbank.domain.model.Currency
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.aplicationbank.presentation.components.BottomNavigationBar
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.draw.clip
 
 
 import androidx.compose.ui.graphics.Brush
@@ -48,6 +51,7 @@ fun HomeScreen(
     var isBalanceVisible by remember { mutableStateOf(true) }
 
     Scaffold(
+
         topBar = {
             AppBar(
                 isBalanceVisible = isBalanceVisible,
@@ -63,31 +67,58 @@ fun HomeScreen(
             onRefresh = viewModel::refreshProducts,
             modifier = Modifier.padding(padding)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                if (state.products.isEmpty() && state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-
-                LazyColumn {
-                    items(state.products) { product ->
-                        ProductItem(
-                            product = product,
-                            isBalanceVisible = isBalanceVisible,
-                            onClick = { onProductSelected(product.id) }
+            Column(modifier = Modifier.fillMaxSize()) {
+                Spacer(modifier = Modifier.height(24.dp))
+                // Título "Productos"
+                Text(
+                    text = "Productos",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Bold
+                )
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp).padding(vertical = 12.dp)) {
+                    if (state.products.isEmpty() && state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                }
-
-                state.error?.let { error ->
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error,
+                    LazyColumn (
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
-                    )
+
+                            .clip(RoundedCornerShape(15.dp)) // Esquinas redondeadas
+                            .border(1.dp, Color(0x9CD8DADC), RoundedCornerShape(15.dp)) // Borde de 1px de color opaco
+                            .background(Color.White)
+                        //.padding(horizontal = 8.dp)
+
+
+                    ){
+                        items(state.products) { product ->
+                            ProductItem(
+                                product = product,
+                                isBalanceVisible = isBalanceVisible,
+                                onClick = { onProductSelected(product.id) }
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 28.dp), // Espaciado entre items y la línea
+                                thickness = 1.dp,
+                                color = Color.Gray.copy(alpha = 0.15f) // Línea de separación
+                            )
+                        }
+                    }
+
+                    state.error?.let { error ->
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp)
+                        )
+                    }
                 }
             }
         }
@@ -113,7 +144,7 @@ fun AppBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(all = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -153,43 +184,35 @@ fun ProductItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icono de producto
-//        Icon(
-//            painter = painterResource(id = when(product.currency){
-//                Currency.PEN -> R.drawable.savings_sol
-//                Currency.USD -> R.drawable.savings_dollar
-//            }), // Reemplaza con el ícono correcto
-//            contentDescription = product.name,
-//            modifier = Modifier
-//                .size(80.dp)
-//                .padding(end = 16.dp)
-//        )
         Icon(
-            painter = rememberAsyncImagePainter(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(
-                        when (product.currency) {
-                            Currency.PEN -> "android.resource://${LocalContext.current.packageName}/raw/savings_sol"
-                            Currency.USD -> "android.resource://${LocalContext.current.packageName}/raw/savings_dollar"
-                        }
-                    )
-                    .decoderFactory(SvgDecoder.Factory())
-                    .build()
-            ),
+            painter = painterResource(id = when(product.currency){
+                Currency.PEN -> R.drawable.savings_sol
+                Currency.USD -> R.drawable.savings_dollar
+            }),
             contentDescription = product.name,
             modifier = Modifier
                 .size(80.dp)
-                .padding(end = 16.dp)
+                //.background(color = Color(0xFFE6FAFF))
+                .padding(all = 1.dp)
+                .clip(RoundedCornerShape(100.dp)),
+                //.border(1.dp, Color(0xFFD8DADC), RoundedCornerShape(100.dp)),
+            tint = Color.Unspecified
         )
+
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = product.name,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color(0xE6003462)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -202,19 +225,24 @@ fun ProductItem(
                     "••••••••"
                 },
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF003462)
             )
             Text(
                 text = "Saldo disponible",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color(0xCC003462)
             )
         }
         Icon(
             imageVector = Icons.Default.ChevronRight, // Reemplaza con el ícono correcto
             contentDescription = "Acceder",
             modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = Color(0xFF00C8FF)
         )
+        Box(
+            modifier = Modifier.padding(end = 12.dp)
+        )
+        {  }
     }
 }

@@ -2,6 +2,7 @@ package com.example.aplicationbank.presentation.detail
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.border
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import org.koin.androidx.compose.koinViewModel
@@ -19,6 +20,14 @@ import com.example.aplicationbank.domain.model.Product
 import com.example.aplicationbank.domain.model.Transaction
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircleOutline
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import com.example.aplicationbank.R
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -32,9 +41,17 @@ fun ProductDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp)
     ) {
         state.product?.let { product ->
+            Text(
+                text = "Consultas",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth(),
+                fontWeight = FontWeight.Bold
+            )
             ProductHeader(product)
             Spacer(modifier = Modifier.height(24.dp))
             TransactionsList(state.transactions)
@@ -60,36 +77,76 @@ fun ProductDetailScreen(
 fun ProductHeader(product: Product) {
     Card(
         modifier = Modifier.fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = Color(0x9CD8DADC),
+                shape = RoundedCornerShape(15.dp)
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(24.dp)
         ) {
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Icon(
+                    painter = painterResource(id = when(product.currency){
+                        Currency.PEN -> R.drawable.savings_sol
+                        Currency.USD -> R.drawable.savings_dollar
+                    }),
+                    contentDescription = product.name,
+                    modifier = Modifier
+                        .size(80.dp)
+                        //.background(color = Color(0xFFE6FAFF))
+                        .padding(all = 1.dp)
+                        .clip(RoundedCornerShape(100.dp)),
+                    //.border(1.dp, Color(0xFFD8DADC), RoundedCornerShape(100.dp)),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.widthIn(16.dp))
+                Column (
+                    horizontalAlignment = Alignment.Start
+                ){
+                    Text(
+                        text = product.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xCC003462),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = "Cuenta: ${product.accountNumber}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = "CCI: ${product.cci}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = product.name,
-                style = MaterialTheme.typography.titleLarge
+                text = "Saldo disponible",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Cuenta: ${product.accountNumber}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "CCI: ${product.cci}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = when (product.currency) {
                     Currency.PEN -> "S/ ${product.balance}"
                     Currency.USD -> "US$ ${product.balance}"
                 },
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Saldo disponible",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                //fontWeight = FontWeight.Bold,
+                color = Color(0xFF003462)
             )
         }
     }
@@ -101,7 +158,8 @@ fun TransactionsList(transactions: List<Transaction>) {
     Column {
         Text(
             text = "Últimos movimientos",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
@@ -122,7 +180,10 @@ fun TransactionItem(transaction: Transaction) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
     ) {
         Row(
             modifier = Modifier
@@ -131,16 +192,26 @@ fun TransactionItem(transaction: Transaction) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    text = transaction.description,
-                    style = MaterialTheme.typography.bodyLarge
+            Row {
+                Icon(
+                    imageVector = Icons.Default.CheckCircleOutline,
+                    contentDescription = "Transacciones",
+                    tint = Color(0xE6003462),
                 )
-                Text(
-                    text = transaction.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = transaction.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+
+                    )
+                    Text(
+                        text = transaction.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
             Text(

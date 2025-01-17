@@ -57,13 +57,13 @@ class MainActivity : ComponentActivity() {
                                             popUpTo("home") { inclusive = true }
                                         }
                                         "Operaciones" -> {
-                                            // Navega a la pantalla de operaciones (si existe)
+
                                         }
                                         "Servicios" -> {
-                                            // Navega a la pantalla de servicios (si existe)
+
                                         }
                                         "Soporte" -> {
-                                            // Navega a la pantalla de soporte (si existe)
+
                                         }
                                     }
                                 }
