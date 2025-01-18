@@ -1,7 +1,7 @@
 package com.example.aplicationbank
 
 import android.app.Application
-import appModule
+import com.example.aplicationbank.di.appModule
 import org.koin.core.context.startKoin
 import org.koin.android.ext.koin.androidLogger
 import org.koin.android.ext.koin.androidContext

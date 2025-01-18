@@ -4,25 +4,50 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aplicationbank.domain.usecase.GetProductsUseCase
 import com.example.aplicationbank.domain.usecase.RefreshProductsUseCase
+import com.example.aplicationbank.domain.usecase.ValidateSessionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val getProductsUseCase: GetProductsUseCase,
+    private val validateSessionUseCase: ValidateSessionUseCase,
     private val refreshProductsUseCase: RefreshProductsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
+    private val _navigateToLogin = MutableStateFlow(false)
+    val navigateToLogin = _navigateToLogin.asStateFlow()
+
     init {
-        loadProducts()
+        validateSessionAndLoadProducts()
     }
+
+    private fun validateSessionAndLoadProducts() {
+        viewModelScope.launch {
+            try {
+                val isSessionValid = validateSessionUseCase().first()
+                if (isSessionValid) {
+                    loadProducts()
+                } else {
+                    _navigateToLogin.update { true }
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(isLoading = false, error = e.message ?: "Error desconocido al validar sesión")
+                }
+            }
+        }
+    }
+
 
     fun loadProducts() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            _state.update { it.copy(isLoading = true) }
             try {
                 val products = getProductsUseCase()
                 _state.value = _state.value.copy(
@@ -33,7 +58,7 @@ class HomeViewModel(
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Error desconocido"
+                    error = e.message ?: "Error desconocido al cargar productos"
                 )
             }
         }

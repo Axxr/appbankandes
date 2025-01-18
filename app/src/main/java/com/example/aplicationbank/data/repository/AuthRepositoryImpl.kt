@@ -17,6 +17,7 @@ import com.example.aplicationbank.domain.model.User
 import com.example.aplicationbank.domain.repository.AuthRepository
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 
 
@@ -38,7 +39,7 @@ class AuthRepositoryImpl(
                         loginData.refreshToken,
                         loginData.expiresIn
                     )
-
+                    println("Access Token: ${loginData.accessToken}")
                     AuthResult.Success(
                         AuthTokens(
                             accessToken = loginData.accessToken,
@@ -52,7 +53,9 @@ class AuthRepositoryImpl(
                             role = loginData.user.rbac.role,
                             language = loginData.user.profile.language
                         )
+
                     )
+
                 } ?: AuthResult.Error("Invalid response from server")
             } else {
                 val errorBody = response.errorBody()?.string()
@@ -69,8 +72,18 @@ class AuthRepositoryImpl(
         }
     }
 
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    override fun isSessionValid(): Flow<Boolean> = tokenManager.isSessionValid()
+
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun isSessionValid(): Flow<Boolean> = tokenManager.isSessionValid()
+    override fun isSessionValid(): Flow<Boolean> = flow {
+        tokenManager.isSessionValid().collect { isValid ->
+            if (!isValid) {
+                tokenManager.clearTokens()
+            }
+            emit(isValid)
+        }
+    }
 
     private fun createLoginRequest(username: String, password: String): LoginRequest {
         return LoginRequest(

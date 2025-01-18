@@ -51,7 +51,8 @@ class TokenManager(private val context: Context) {
     fun isSessionValid(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
             val expiryTime = preferences[TOKEN_EXPIRY_KEY]?.let { Instant.parse(it) }
-            expiryTime?.isAfter(Instant.now()) ?: false
+            val artificialExpiryTime = Instant.now().plusSeconds(2 * 60)
+            expiryTime?.isAfter(Instant.now()) ?: false && Instant.now().isBefore(artificialExpiryTime)
         }
     }
 

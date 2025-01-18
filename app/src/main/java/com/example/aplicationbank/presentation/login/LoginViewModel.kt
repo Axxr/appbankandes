@@ -32,7 +32,9 @@ class LoginViewModel(
     }
 
     fun onUsernameChange(username: String) {
-        _state.value = _state.value.copy(username = username)
+//        _state.value = _state.value.copy(username = username)
+        val filteredUsername = username.filter { it.isDigit() }.take(8)
+        _state.value = _state.value.copy(username = filteredUsername)
     }
 
     fun onPasswordChange(password: String) {

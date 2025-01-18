@@ -1,5 +1,6 @@
+package com.example.aplicationbank.di
 
-
+import GetTransactionsUseCase
 import com.example.aplicationbank.BuildConfig
 import com.example.aplicationbank.data.local.TokenManager
 import com.example.aplicationbank.data.remote.api.AuthApi
@@ -67,7 +68,7 @@ val appModule = module {
 
     // ViewModels
     viewModel { LoginViewModel(get(), get()) }
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { parameters ->
         ProductDetailViewModel(
             getProductsUseCase = get(),
