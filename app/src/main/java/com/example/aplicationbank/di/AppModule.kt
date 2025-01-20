@@ -12,10 +12,12 @@ import com.example.aplicationbank.domain.repository.ProductRepository
 import com.example.aplicationbank.domain.usecase.GetProductsUseCase
 import com.example.aplicationbank.domain.usecase.LoginUseCase
 import com.example.aplicationbank.domain.usecase.RefreshProductsUseCase
+import com.example.aplicationbank.domain.usecase.ShareProductInfoUseCase
 import com.example.aplicationbank.domain.usecase.ValidateSessionUseCase
 import com.example.aplicationbank.presentation.detail.ProductDetailViewModel
 import com.example.aplicationbank.presentation.home.HomeViewModel
 import com.example.aplicationbank.presentation.login.LoginViewModel
+import com.example.aplicationbank.utils.shareProductInfo
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -65,6 +67,7 @@ val appModule = module {
     single { GetProductsUseCase(get()) }
     single { RefreshProductsUseCase(get()) }
     single { GetTransactionsUseCase(get()) }
+    single { ShareProductInfoUseCase() }
 
     // ViewModels
     viewModel { LoginViewModel(get(), get()) }
@@ -73,7 +76,8 @@ val appModule = module {
         ProductDetailViewModel(
             getProductsUseCase = get(),
             getTransactionsUseCase = get(),
-            productId = parameters.get()
+            productId = parameters.get(),
+            shareProductInfoUseCase = get()
         )
     }
 }

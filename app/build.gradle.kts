@@ -20,6 +20,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    packaging {
+        resources {
+            pickFirsts += "/META-INF/LICENSE.md"
+            pickFirsts += "/META-INF/LICENSE-notice.md"
+            // O alternativamente usar excludes:
+            // resources.excludes.add("/META-INF/LICENSE.md")
+            // resources.excludes.add("/META-INF/LICENSE-notice.md")
+        }
+    }
 
     buildTypes {
         release {
@@ -91,6 +100,30 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    //test
+    androidTestImplementation (libs.junit)
+    androidTestImplementation (libs.mockito.core)
+    androidTestImplementation (libs.kotlinx.coroutines.test)
+    androidTestImplementation (libs.mockito.junit.jupiter)
+    androidTestImplementation (libs.androidx.junit.v115)
+    androidTestImplementation (libs.androidx.espresso.core.v351)
+
+    testImplementation (libs.junit)
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation (libs.mockito.junit.jupiter)
+    testImplementation (libs.mockito.inline)
+
+    // Dependencia para JUnit 5
+    testImplementation (libs.junit.jupiter.api)
+    testRuntimeOnly (libs.junit.jupiter.engine)
+
+    // Dependencia para usar Mockito con JUnit 5
+    testImplementation (libs.mockito.junit.jupiter)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
 }

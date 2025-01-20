@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
@@ -17,12 +17,15 @@ import java.time.Instant
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_prefs")
 
 class TokenManager(private val context: Context) {
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
 
     private val encryptedPrefs = EncryptedSharedPreferences.create(
-        "secure_prefs",
-        masterKeyAlias,
         context,
+        "secure_prefs",
+        masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
@@ -63,11 +66,9 @@ class TokenManager(private val context: Context) {
     fun isSessionValid(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
             val lastValidatedTime = preferences[LAST_VALIDATED_TIME_KEY]?.let { Instant.parse(it) }
-
             if (lastValidatedTime == null) {
                 return@map false
             }
-
             val currentTime = Instant.now()
             val twoMinutesLater = lastValidatedTime.plusSeconds(2 * 60)
             currentTime.isBefore(twoMinutesLater)

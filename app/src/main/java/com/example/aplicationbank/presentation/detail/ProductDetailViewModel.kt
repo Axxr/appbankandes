@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.aplicationbank.domain.model.Currency
 import com.example.aplicationbank.domain.model.Product
 import com.example.aplicationbank.domain.usecase.GetProductsUseCase
+import com.example.aplicationbank.domain.usecase.ShareProductInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class ProductDetailViewModel(
     private val getProductsUseCase: GetProductsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val shareProductInfoUseCase: ShareProductInfoUseCase,
     private val productId: String
 ) : ViewModel() {
 
@@ -49,16 +51,21 @@ class ProductDetailViewModel(
         }
     }
 
-    fun buildShareMessage(product: Product): String {
-        return """
-        Cuenta: ${product.name}
-        Número: ${product.accountNumber}
-        CCI: ${product.cci}
-        Moneda: ${product.currency}
-    """.trimIndent()
+    fun getShareMessage(): String? {
+        val product = state.value.product
+        return product?.let { shareProductInfoUseCase.execute(it) }
     }
 
-
+//    fun buildShareMessage(product: Product): String {
+//        return """
+//        Cuenta: ${product.name}
+//        Número: ${product.accountNumber}
+//        CCI: ${product.cci}
+//        Moneda: ${product.currency}
+//    """.trimIndent()
+//    }
+//
+//
     fun clearShareMessage() {
         _state.value = _state.value.copy(shareMessage = null)
     }

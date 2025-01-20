@@ -75,6 +75,15 @@ class ProductRepositoryImpl(
             currency = Currency.PEN,
             accountNumber = "309756633260",
             cci = "300975663325160"
+        ),
+        Product(
+            id = "4",
+            name = "Cuenta Dólares",
+            type = ProductType.SAVINGS_ACCOUNT,
+            balance = 1200.00,
+            currency = Currency.USD,
+            accountNumber = "409756644260",
+            cci = "400975774425160"
         )
     )
 

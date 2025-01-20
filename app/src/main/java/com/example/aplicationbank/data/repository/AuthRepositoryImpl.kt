@@ -43,7 +43,7 @@ class AuthRepositoryImpl(
                         loginData.refreshToken,
                         loginData.expiresIn,
                     )
-                    println("Access Token: ${loginData.accessToken}")
+
                     AuthResult.Success(
                         AuthTokens(
                             accessToken = loginData.accessToken,
@@ -75,9 +75,6 @@ class AuthRepositoryImpl(
             AuthResult.Error("Sucedió un error inesperado")
         }
     }
-
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    override fun isSessionValid(): Flow<Boolean> = tokenManager.isSessionValid()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun isSessionValid(): Flow<Boolean> = flow {

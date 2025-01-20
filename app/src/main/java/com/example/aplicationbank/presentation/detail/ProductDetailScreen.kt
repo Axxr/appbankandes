@@ -1,7 +1,5 @@
 package com.example.aplicationbank.presentation.detail
 
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
@@ -31,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.aplicationbank.R
+import com.example.aplicationbank.utils.shareProductInfo
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -59,9 +58,12 @@ fun ProductDetailScreen(
             ProductHeader(
                 product = product,
                 onShareClick = {
-                    val shareMessage = viewModel.buildShareMessage(product)
-                    val clearMessage = viewModel.clearShareMessage()
-                    shareProductInfo(context, shareMessage, clearMessage)
+                    val shareMessage = viewModel.getShareMessage()
+                    shareMessage?.let {
+                        shareProductInfo(context, it)
+                        viewModel.clearShareMessage()
+                    }
+
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -150,8 +152,19 @@ fun ProductHeader(
                         )
 
                     }
+//                    IconButton(
+//                        onClick = { onShareClick() }
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Share,
+//                            contentDescription = "Compartir",
+//                            tint = MaterialTheme.colorScheme.primary
+//                        )
+//                    }
                     IconButton(
-                        onClick = { onShareClick() }
+                        onClick = {
+                            onShareClick()
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Share,
@@ -255,10 +268,10 @@ fun TransactionItem(transaction: Transaction) {
     }
 }
 
-private fun shareProductInfo(context: Context, shareMessage: String, claearmesage: Unit) {
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TEXT, shareMessage)
-    }
-    context.startActivity(Intent.createChooser(shareIntent, "Compartir información de la cuenta"))
-}
+//private fun shareProductInfo(context: Context, shareMessage: String, clearShareMessage: Unit) {
+//    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+//        type = "text/plain"
+//        putExtra(Intent.EXTRA_TEXT, shareMessage)
+//    }
+//    context.startActivity(Intent.createChooser(shareIntent, "Compartir información de la cuenta"))
+//}
