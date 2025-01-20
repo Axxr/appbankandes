@@ -74,7 +74,6 @@ fun HomeScreen(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Spacer(modifier = Modifier.height(24.dp))
-                // Título "Productos"
                 Text(
                     text = "Productos",
                     style = MaterialTheme.typography.titleLarge,
@@ -86,47 +85,32 @@ fun HomeScreen(
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp).padding(vertical = 12.dp)) {
-                    if (state.products.isEmpty() && state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                    LazyColumn (
+
+                    val displayedProducts = if (state.isRefreshed) state.products else state.products.take(2)
+
+                    LazyColumn(
                         modifier = Modifier
-
-                            .clip(RoundedCornerShape(15.dp)) // Esquinas redondeadas
-                            .border(1.dp, Color(0x9CD8DADC), RoundedCornerShape(15.dp)) // Borde de 1px de color opaco
+                            .clip(RoundedCornerShape(15.dp))
+                            .border(1.dp, Color(0x9CD8DADC), RoundedCornerShape(15.dp))
                             .background(Color.White)
-                        //.padding(horizontal = 8.dp)
-
-
-                    ){
-                        items(state.products) { product ->
+                    ) {
+                        items(displayedProducts) { product ->
                             ProductItem(
                                 product = product,
                                 isBalanceVisible = isBalanceVisible,
                                 onClick = { onProductSelected(product.id) }
                             )
                             HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 28.dp), // Espaciado entre items y la línea
+                                modifier = Modifier.padding(horizontal = 28.dp),
                                 thickness = 1.dp,
-                                color = Color.Gray.copy(alpha = 0.15f) // Línea de separación
+                                color = Color.Gray.copy(alpha = 0.15f)
                             )
                         }
-                    }
-
-                    state.error?.let { error ->
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(16.dp)
-                        )
                     }
                 }
             }
         }
+
     }
 }
 

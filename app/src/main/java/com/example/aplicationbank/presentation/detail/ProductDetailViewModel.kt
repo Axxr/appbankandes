@@ -56,16 +56,6 @@ class ProductDetailViewModel(
         return product?.let { shareProductInfoUseCase.execute(it) }
     }
 
-//    fun buildShareMessage(product: Product): String {
-//        return """
-//        Cuenta: ${product.name}
-//        Número: ${product.accountNumber}
-//        CCI: ${product.cci}
-//        Moneda: ${product.currency}
-//    """.trimIndent()
-//    }
-//
-//
     fun clearShareMessage() {
         _state.value = _state.value.copy(shareMessage = null)
     }

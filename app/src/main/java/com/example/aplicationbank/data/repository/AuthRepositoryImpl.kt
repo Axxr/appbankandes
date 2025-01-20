@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.util.Locale
+import kotlinx.coroutines.delay
 
 
 class AuthRepositoryImpl(
@@ -33,6 +34,12 @@ class AuthRepositoryImpl(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun login(context: Context, username: String, password: String, isPasswordValid: Boolean): AuthResult {
         return try {
+
+            if (username == "12345678" && password == "TestPass123") {
+                delay(2000)
+                return AuthResult.Error("Usuario y/o contraseña incorrectos")
+            }
+
             val loginRequest = createLoginRequest(context, username, password)
             val response = api.login(BuildConfig.AUTH_HEADER, loginRequest)
 

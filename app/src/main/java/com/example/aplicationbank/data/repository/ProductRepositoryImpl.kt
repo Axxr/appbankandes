@@ -21,7 +21,7 @@ class ProductRepositoryImpl(
         return try {
             val response = api.getProducts()
             if (response.isSuccessful) {
-                response.body()?.products?.map { it.toDomain() } ?: emptyList()
+                response.body()?.products?.map { it.toDomain() } ?: getMockProducts()
             } else {
                 throw Exception("Error al obtener productos")
             }
@@ -31,7 +31,20 @@ class ProductRepositoryImpl(
         }
     }
 
-    override suspend fun refreshProducts(): List<Product> = getProducts()
+    override suspend fun refreshProducts(): List<Product> {
+        return try {
+            val response = api.getProducts()
+            if (response.isSuccessful) {
+                response.body()?.products?.map { it.toDomain() }
+                    ?: (getMockProducts() + getMockAdditionalProducts())
+            } else {
+                getMockProducts() + getMockAdditionalProducts()
+            }
+        } catch (e: Exception) {
+            getMockProducts() + getMockAdditionalProducts()
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getTransactions(productId: String): List<Transaction> {
@@ -66,7 +79,10 @@ class ProductRepositoryImpl(
             currency = Currency.USD,
             accountNumber = "209756633259",
             cci = "200975663325159"
-        ),
+        )
+    )
+
+    private fun getMockAdditionalProducts(): List<Product> = listOf(
         Product(
             id = "3",
             name = "Cuenta Soles",

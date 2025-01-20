@@ -20,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -48,13 +49,42 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    var isPasswordValid by remember { mutableStateOf(true) }
+    var showDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            errorMessage = it
+            showDialog = true
+        }
+    }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onNavigateToHome()
         }
     }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+                viewModel.clearError()
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    viewModel.clearError()
+                }) {
+                    Text("Aceptar")
+                }
+            },
+            title = { Text("Error de inicio de sesión") },
+            text = { Text(errorMessage) }
+        )
+    }
+
 
     Column(
         modifier = Modifier
@@ -92,8 +122,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Welcome text
-
             }
         }
         Spacer(modifier = Modifier.height(46.dp))
@@ -105,7 +133,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(46.dp))
 
-        // DNI Input Field
+        // DNI
         Text(
             text = "Ingresa tu DNI",
             color = Color(0xFF003462),
@@ -144,7 +172,7 @@ fun LoginScreen(
                 .padding(bottom = 8.dp)
                 .padding(horizontal = 24.dp)
         )
-        // Password Input Field
+        // Password
         TextField(
             value = state.password,
             onValueChange = { newPassword ->
@@ -185,7 +213,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Forgot Password Text
+        // Olvide Contraseña
         TextButton(
             onClick = { /* TODO: Handle forgot password */ },
             modifier = Modifier.align(Alignment.End)
@@ -215,7 +243,7 @@ fun LoginScreen(
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
-                    color = Color.White,
+                    color = Color(0xFF003462),
                     modifier = Modifier.size(24.dp)
                 )
             } else {
