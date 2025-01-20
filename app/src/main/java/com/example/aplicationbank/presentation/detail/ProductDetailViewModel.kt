@@ -1,5 +1,6 @@
 package com.example.aplicationbank.presentation.detail
 
+import GetTransactionsUseCase
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat.startActivity

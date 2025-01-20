@@ -1,6 +1,8 @@
 package com.example.aplicationbank.data.repository
 
+import android.content.Context
 import android.os.Build
+import android.util.DisplayMetrics
 import androidx.annotation.RequiresApi
 import com.example.aplicationbank.BuildConfig
 import com.example.aplicationbank.data.local.TokenManager
@@ -19,6 +21,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
+import java.util.Locale
 
 
 class AuthRepositoryImpl(
@@ -27,9 +30,10 @@ class AuthRepositoryImpl(
     private val gson: Gson
 ) : AuthRepository {
 
-    override suspend fun login(username: String, password: String): AuthResult {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun login(context: Context, username: String, password: String, isPasswordValid: Boolean): AuthResult {
         return try {
-            val loginRequest = createLoginRequest(username, password)
+            val loginRequest = createLoginRequest(context, username, password)
             val response = api.login(BuildConfig.AUTH_HEADER, loginRequest)
 
             if (response.isSuccessful) {
@@ -37,7 +41,7 @@ class AuthRepositoryImpl(
                     tokenManager.saveTokens(
                         loginData.accessToken,
                         loginData.refreshToken,
-                        loginData.expiresIn
+                        loginData.expiresIn,
                     )
                     println("Access Token: ${loginData.accessToken}")
                     AuthResult.Success(
@@ -85,32 +89,59 @@ class AuthRepositoryImpl(
         }
     }
 
-    private fun createLoginRequest(username: String, password: String): LoginRequest {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createLoginRequest(context: Context, username: String, password: String): LoginRequest {
+        val deviceInfo = getDeviceInfo(context)
         return LoginRequest(
             user = UserRequest(
                 usr_code = username,
                 pass = password,
                 profile = ProfileRequest()
             ),
-            device = DeviceRequest(
-                deviceId = "66261162-16d5-4ad3-9b9b-8c05a373ad60",
-                name = "Galaxy S25 Ultra",
-                version = "Android 14.0",
-                width = 1080,
-                height = 2244,
-                model = "SM-S925",
-                osVersion = "Android 14.0",
-                manufacturer = "Samsung",
-                screenDensity = "xxhdpi",
-                language = "en-US",
-                lastUpdated = "2025-01-10T12:00:00Z",
-                processor = "Qualcomm Snapdragon 8 Elite",
-                ram = 16,
-                storage = 512,
-                batteryCapacity = 5000,
-                batteryType = "Silicon"
-            ),
+            device = deviceInfo,
             app = AppRequest(version = "1.0.0")
         )
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getDeviceInfo(context: Context): DeviceRequest {
+        val displayMetrics = context.resources.displayMetrics
+        val densityDpi = when (displayMetrics.densityDpi) {
+            DisplayMetrics.DENSITY_LOW -> "ldpi"
+            DisplayMetrics.DENSITY_MEDIUM -> "mdpi"
+            DisplayMetrics.DENSITY_HIGH -> "hdpi"
+            DisplayMetrics.DENSITY_XHIGH -> "xhdpi"
+            DisplayMetrics.DENSITY_XXHIGH -> "xxhdpi"
+            DisplayMetrics.DENSITY_XXXHIGH -> "xxxhdpi"
+            else -> "unknown"
+        }
+
+        return DeviceRequest(
+            deviceId = Build.ID ?: "unknown",
+            name = Build.DEVICE ?: "unknown",
+            version = Build.VERSION.RELEASE ?: "unknown",
+            width = displayMetrics.widthPixels,
+            height = displayMetrics.heightPixels,
+            model = Build.MODEL ?: "unknown",
+            osVersion = "Android ${Build.VERSION.RELEASE}",
+            manufacturer = Build.MANUFACTURER ?: "unknown",
+            screenDensity = densityDpi,
+            language = Locale.getDefault().toString(),
+            lastUpdated = java.time.ZonedDateTime.now().toString(),
+            processor = Build.HARDWARE ?: "unknown",
+            ram = Runtime.getRuntime().totalMemory().div(1024 * 1024).toInt(),
+            storage = context.getExternalFilesDir(null)?.freeSpace?.div(1024 * 1024)?.toInt() ?: 0,
+            batteryCapacity = getBatteryCapacity(context),
+            batteryType = "Li-ion"
+        )
+    }
+
+    private fun getBatteryCapacity(context: Context): Int {
+        val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as android.os.BatteryManager
+        val capacity = batteryManager.getLongProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        return capacity.toInt()
+    }
+
+
 }

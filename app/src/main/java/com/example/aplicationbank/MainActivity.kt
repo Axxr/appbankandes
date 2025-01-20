@@ -66,6 +66,11 @@ class MainActivity : ComponentActivity() {
 
                                         }
                                     }
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate("login") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
                                 }
                             )
                         }

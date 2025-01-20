@@ -1,5 +1,6 @@
 package com.example.aplicationbank.presentation.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aplicationbank.domain.model.AuthResult
@@ -32,20 +33,27 @@ class LoginViewModel(
     }
 
     fun onUsernameChange(username: String) {
-//        _state.value = _state.value.copy(username = username)
         val filteredUsername = username.filter { it.isDigit() }.take(8)
         _state.value = _state.value.copy(username = filteredUsername)
     }
 
+
     fun onPasswordChange(password: String) {
-        _state.value = _state.value.copy(password = password)
+        val isPasswordValid = password.length >= 8
+
+        _state.value = _state.value.copy(
+            password = password,
+            isPasswordValid = isPasswordValid
+        )
     }
 
-    fun onLoginClick() {
+
+
+    fun onLoginClick(context: Context) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
 
-            when (val result = loginUseCase(state.value.username, state.value.password)) {
+            when (val result = loginUseCase(context, state.value.username, state.value.password, state.value.isPasswordValid )) {
                 is AuthResult.Success -> {
                     _state.value = _state.value.copy(
                         isLoading = false,

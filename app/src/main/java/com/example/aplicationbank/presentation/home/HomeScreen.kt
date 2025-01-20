@@ -41,11 +41,19 @@ import com.example.aplicationbank.R
 fun HomeScreen(
     onProductSelected: (String) -> Unit,
     viewModel: HomeViewModel = koinViewModel(),
-        onNavigationItemClick: (String) -> Unit
+    onNavigationItemClick: (String) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val navigateToLogin by viewModel.navigateToLogin.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isLoading)
     var isBalanceVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(navigateToLogin) {
+        if (navigateToLogin) {
+            onNavigateToLogin() // Ejecuta la navegación
+        }
+    }
 
     Scaffold(
 

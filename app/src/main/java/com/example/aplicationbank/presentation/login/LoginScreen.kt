@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +36,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
 import org.koin.androidx.compose.koinViewModel
+
 
 @Composable
 fun LoginScreen(
@@ -45,6 +46,9 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    var isPasswordValid by remember { mutableStateOf(true) }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -143,7 +147,9 @@ fun LoginScreen(
         // Password Input Field
         TextField(
             value = state.password,
-            onValueChange = viewModel::onPasswordChange,
+            onValueChange = { newPassword ->
+                viewModel.onPasswordChange(newPassword)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
@@ -195,15 +201,15 @@ fun LoginScreen(
 
         // Login Button
         Button(
-            onClick = viewModel::onLoginClick,
+            onClick = { viewModel.onLoginClick(context) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .height(50.dp),
-            enabled = !state.isLoading && state.username.isNotEmpty() && state.password.isNotEmpty(),
+            enabled = !state.isLoading && state.username.isNotEmpty() && state.password.isNotEmpty() && state.isPasswordValid,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (state.username.isNotEmpty() && state.password.isNotEmpty()) Color(0xFF003462) else Color(0xFFB0BEC5),
+                containerColor = if (state.username.isNotEmpty() && state.password.isNotEmpty() && state.isPasswordValid) Color(0xFF003462) else Color(0xFFB0BEC5),
                 contentColor = Color.White
             )
         ) {
