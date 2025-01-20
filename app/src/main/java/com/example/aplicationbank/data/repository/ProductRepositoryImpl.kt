@@ -26,7 +26,6 @@ class ProductRepositoryImpl(
                 throw Exception("Error al obtener productos")
             }
         } catch (e: Exception) {
-            // En modo desarrollo, retornamos datos mock
             getMockProducts()
         }
     }
@@ -36,12 +35,12 @@ class ProductRepositoryImpl(
             val response = api.getProducts()
             if (response.isSuccessful) {
                 response.body()?.products?.map { it.toDomain() }
-                    ?: (getMockProducts() + getMockAdditionalProducts())
+                    ?: (getMockProducts())
             } else {
-                getMockProducts() + getMockAdditionalProducts()
+                getMockProducts()
             }
         } catch (e: Exception) {
-            getMockProducts() + getMockAdditionalProducts()
+            getMockProducts()
         }
     }
 
@@ -56,7 +55,6 @@ class ProductRepositoryImpl(
                 throw Exception("Error al obtener movimientos")
             }
         } catch (e: Exception) {
-            // En modo desarrollo, retornamos datos mock
             getMockTransactions()
         }
     }
@@ -79,10 +77,7 @@ class ProductRepositoryImpl(
             currency = Currency.USD,
             accountNumber = "209756633259",
             cci = "200975663325159"
-        )
-    )
-
-    private fun getMockAdditionalProducts(): List<Product> = listOf(
+        ),
         Product(
             id = "3",
             name = "Cuenta Soles",
@@ -102,6 +97,7 @@ class ProductRepositoryImpl(
             cci = "400975774425160"
         )
     )
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getMockTransactions(): List<Transaction> = listOf(
