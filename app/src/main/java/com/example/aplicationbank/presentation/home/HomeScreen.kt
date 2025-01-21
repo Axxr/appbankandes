@@ -122,7 +122,7 @@ fun AppBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(110.dp)
             .background(
                 Brush.horizontalGradient(
                     colors = listOf(Color(0xFF0086B9), Color(0xFF00C8FF))
@@ -133,6 +133,7 @@ fun AppBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 30.dp)
                 .padding(all = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween

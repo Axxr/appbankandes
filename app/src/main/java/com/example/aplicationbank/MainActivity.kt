@@ -20,6 +20,7 @@ import com.example.aplicationbank.presentation.detail.ProductDetailScreen
 import com.example.aplicationbank.presentation.home.HomeScreen
 import com.example.aplicationbank.presentation.login.LoginScreen
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.unit.dp
 
 
 class MainActivity : ComponentActivity() {
@@ -31,14 +32,19 @@ class MainActivity : ComponentActivity() {
             AplicationbankTheme {
                 val navController = rememberNavController()
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = "login",
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(0.dp)
                     ) {
                         composable("login") {
                             LoginScreen(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(innerPadding),
                                 onNavigateToHome = {
                                     navController.navigate("home") {
                                         popUpTo("login") { inclusive = true }

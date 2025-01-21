@@ -44,6 +44,7 @@ fun ProductDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = 24.dp)
             .padding(24.dp)
     ) {
         state.product?.let { product ->
